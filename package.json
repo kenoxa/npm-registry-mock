@@ -33,7 +33,6 @@
     "npm-registry-client": "^8.6.0",
     "p-event": "^4.1.0",
     "pkg-dir": "^4.2.0",
-    "read-yaml-file": "^1.1.0",
     "tar-stream": "^2.1.0",
     "type-fest": "^0.8.1",
     "verdaccio": "^4.3.5",

@@ -8,14 +8,15 @@ import { createRequire } from 'module'
 
 import startVerdaccio from 'verdaccio'
 import { name as pkgName, version as pkgVersion } from 'verdaccio/package.json'
-import readYamlFile from 'read-yaml-file'
 import pEvent from 'p-event'
 import RegistryClient from 'npm-registry-client'
 import tar from 'tar-stream'
 import pkgDir from 'pkg-dir'
 
+import config from './config'
+
 const FILE_URL = (import.meta.url || pathToFileURL(__filename)).toString()
-const require = createRequire(FILE_URL)
+const { resolve } = createRequire(FILE_URL)
 
 const USERS = {
   publisher: {
@@ -119,17 +120,13 @@ export class MockRegistry {
 
 export async function startRegistry(): Promise<MockRegistry> {
   const configPath = fileURLToPath(new URL('./config.yaml', FILE_URL).href)
-  const config = await readYamlFile<Config>(configPath)
 
   const plugins = dirname((await pkgDir(fileURLToPath(FILE_URL))) as string)
 
-  const verdaccioMemory = relative(
-    plugins,
-    (await pkgDir(require.resolve('verdaccio-memory'))) as string,
-  )
+  const verdaccioMemory = relative(plugins, (await pkgDir(resolve('verdaccio-memory'))) as string)
   const verdaccioAuthMemory = relative(
     plugins,
-    (await pkgDir(require.resolve('verdaccio-auth-memory'))) as string,
+    (await pkgDir(resolve('verdaccio-auth-memory'))) as string,
   )
 
   Object.assign(config, {
@@ -149,17 +146,24 @@ export async function startRegistry(): Promise<MockRegistry> {
   })
 
   return new Promise((resolve, reject) => {
-    startVerdaccio(config, '127.0.0.1:0', configPath, pkgVersion, pkgName, (server) => {
-      try {
-        server.listen(0, '127.0.0.1')
-      } catch (error) {
-        return reject(error)
-      }
+    startVerdaccio(
+      (config as unknown) as Config,
+      '127.0.0.1:0',
+      configPath,
+      pkgVersion,
+      pkgName,
+      (server) => {
+        try {
+          server.listen(0, '127.0.0.1')
+        } catch (error) {
+          return reject(error)
+        }
 
-      pEvent(server, 'listening')
-        .then(() => new MockRegistry(server))
-        .then(resolve)
-        .catch(reject)
-    })
+        pEvent(server, 'listening')
+          .then(() => new MockRegistry(server))
+          .then(resolve)
+          .catch(reject)
+      },
+    )
   })
 }
