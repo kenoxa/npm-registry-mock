@@ -1,0 +1,25 @@
+packages:
+  '@private/*':
+    access: $authenticated
+    publish: $authenticated
+
+  # allow everyone (anonymous or logged in) to access and publish any package
+  '**':
+    access: $all
+    publish: $authenticated
+
+security:
+  api:
+    legacy: true
+    jwt:
+      sign:
+        expiresIn: 10m
+
+logs:
+  - { type: stdout, format: pretty, level: error }
+
+server:
+  keepAliveTimeout: 1
+
+web:
+  enable: false
