@@ -1,6 +1,6 @@
 {
   "name": "@kenoxa/npm-registry-mock",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "NPM registry mock for testing using verdaccio",
   "homepage": "https://github.com/kenoxa/npm-registry-mock",
   "bugs": "https://github.com/kenoxa/npm-registry-mock/issues",
