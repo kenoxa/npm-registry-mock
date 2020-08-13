@@ -14,7 +14,7 @@ import RegistryClient from 'npm-registry-client'
 import tar from 'tar-stream'
 import pkgDir from 'pkg-dir'
 
-const FILE_URL = import.meta.url || pathToFileURL(__filename).href
+const FILE_URL = (import.meta.url || pathToFileURL(__filename)).toString()
 const require = createRequire(FILE_URL)
 
 const USERS = {
